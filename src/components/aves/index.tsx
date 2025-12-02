@@ -1,9 +1,11 @@
 import React, {
   ComponentType,
   CSSProperties,
+  forwardRef,
   ReactNode,
   useCallback,
   useEffect,
+  useImperativeHandle,
   useRef,
   useState,
 } from 'react'
@@ -22,10 +24,17 @@ export interface Props {
   children: ReactNode,
   className?: string,
   style?: CSSProperties,
+  popupClassName?: string,
+  popupStyle?: CSSProperties,
   popup: ComponentType<{ text?: string }>,
+  disabled?: boolean,
 }
 
-const Aves = (props: Props) => {
+export interface Ref {
+  hidePopup: () => void,
+}
+
+const Aves = forwardRef<Ref, Props>((props, ref) => {
   const Popup = props.popup
   const [selectionText, setSelectionText] = useState<string>()
   const textWrapperRef = useRef<HTMLDivElement>(null)
@@ -50,11 +59,14 @@ const Aves = (props: Props) => {
   })
 
   const onSelection = useCallback(async () => {
+    if (props.disabled) {
+      return
+    }
+
     setSelectionText(undefined)
     await new Promise((r) => setTimeout(r))
 
     const selection = document.getSelection()
-
     if (!selection || selection.isCollapsed || !selection.toString().length) {
       return
     }
@@ -63,6 +75,7 @@ const Aves = (props: Props) => {
     }
 
     const range = selection.getRangeAt(0)
+
     textRef.current = range.toString()
     setSelectionText(range.toString())
     refs.setReference(range)
@@ -75,6 +88,13 @@ const Aves = (props: Props) => {
     }
   }, [onSelection])
 
+  useImperativeHandle(ref, () => ({
+    hidePopup: () => {
+      window.getSelection()?.empty?.()
+      window.getSelection()?.removeAllRanges?.()
+    },
+  }))
+
   return (
     <>
       <div
@@ -82,9 +102,15 @@ const Aves = (props: Props) => {
         ref={textWrapperRef}
         className={props.className}
         onPointerDown={() => {
+          if (props.disabled) {
+            return
+          }
           document.body.style.userSelect = 'none'
         }}
         onPointerUp={() => {
+          if (props.disabled) {
+            return
+          }
           document.body.style.userSelect = bodyUserSelect.current
         }}
       >
@@ -92,6 +118,7 @@ const Aves = (props: Props) => {
       </div>
       <div
         ref={refs.setFloating}
+        className={props.popupClassName}
         style={{
           position: strategy,
           top: 0,
@@ -105,12 +132,13 @@ const Aves = (props: Props) => {
           transition: 'opacity 0.3s ease-in-out',
           opacity: selectionText === undefined ? 0 : 1,
           visibility: selectionText === undefined ? 'hidden' : 'visible',
+          ...props.popupStyle,
         }}
       >
         <Popup text={textRef.current} />
       </div>
     </>
   )
-}
+})
 
 export default Aves
