@@ -7,11 +7,22 @@ import Error from './error'
 import { Props as AvesProps } from '../aves'
 
 const Aves = createComponent<{}, AvesProps>({ name: 'aves' })
+const P: React.FC<{ text?: string }> = ({ text }) => {
+            return <div style={{ background: '#fff', padding: '3px 8px', fontSize: 14, border: '1px solid #e5e5e5', boxShadow: '0px 4px 8px 0px rgba(31, 35, 41, 0.1)', borderRadius: 4 }}>
+              <span style={{ cursor: 'pointer' }} onClick={() => {
+                navigator.clipboard.writeText(text || '')
+              }}>复制</span>
+            </div>
+        }
+
 const T = () => {
   return (
     <>
       <div style={{ marginBottom: 20 }}>这段文本选中时候不应该弹出浮窗</div>
-      <Aves className="aves">
+      <Aves
+        className="aves"
+        popup={P}
+      >
         <h3>中间件</h3>
         <div className="text" style={{ height: 1000 }}>
           空格 &nbsp; &nbsp; 情况

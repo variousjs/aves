@@ -1,4 +1,5 @@
 import React, {
+  ComponentType,
   CSSProperties,
   ReactNode,
   useCallback,
@@ -16,22 +17,20 @@ import {
   hide,
   inline,
 } from '@floating-ui/react-dom'
-import { anchorCssProperties, transformOrigin } from './middleware'
 
 export interface Props {
-  children: ReactNode
-  className?: string
-  style?: CSSProperties
+  children: ReactNode,
+  className?: string,
+  style?: CSSProperties,
+  popup: ComponentType<{ text?: string }>,
 }
 
 const Aves = (props: Props) => {
+  const Popup = props.popup
   const [selectionText, setSelectionText] = useState<string>()
   const textWrapperRef = useRef<HTMLDivElement>(null)
   const bodyUserSelect = useRef(document.body.style.userSelect)
-
-  const detectOverflowOptions = {
-    padding: 10,
-  }
+  const textRef = useRef<string>(undefined)
 
   const { x, y, strategy, refs, isPositioned } = useFloating({
     strategy: 'fixed',
@@ -39,21 +38,18 @@ const Aves = (props: Props) => {
     whileElementsMounted: autoUpdate,
     middleware: [
       inline(),
-      anchorCssProperties(),
       offset({ mainAxis: 10, alignmentAxis: 0 }),
-      flip(detectOverflowOptions),
+      flip(),
       shift({
         mainAxis: true,
         crossAxis: false,
         limiter: limitShift(),
-        ...detectOverflowOptions,
       }),
-      transformOrigin({ arrowWidth: 10, arrowHeight: 5 }),
       hide({ strategy: 'referenceHidden' }),
     ],
   })
 
-  const onCheckSelection = useCallback(async () => {
+  const onSelection = useCallback(async () => {
     setSelectionText(undefined)
     await new Promise((r) => setTimeout(r))
 
@@ -67,16 +63,17 @@ const Aves = (props: Props) => {
     }
 
     const range = selection.getRangeAt(0)
+    textRef.current = range.toString()
     setSelectionText(range.toString())
     refs.setReference(range)
   }, [refs])
 
   useEffect(() => {
-    document.addEventListener('pointerup', onCheckSelection)
+    document.addEventListener('pointerup', onSelection)
     return () => {
-      document.removeEventListener('pointerup', onCheckSelection)
+      document.removeEventListener('pointerup', onSelection)
     }
-  }, [onCheckSelection])
+  }, [onSelection])
 
   return (
     <>
@@ -102,18 +99,15 @@ const Aves = (props: Props) => {
           transform: isPositioned
             ? `translate3d(${Math.round(x ?? 0)}px, ${Math.round(y ?? 0)}px, 0)`
             : 'translate3d(0, -200%, 0)',
+          userSelect: 'none',
           minWidth: 'max-content',
-          zIndex: 999,
+          zIndex: 9999,
           transition: 'opacity 0.3s ease-in-out',
           opacity: selectionText === undefined ? 0 : 1,
           visibility: selectionText === undefined ? 'hidden' : 'visible',
         }}
       >
-        <div style={{ userSelect: 'none' }}>
-          <div style={{ background: 'gray' }}>
-            {selectionText}
-          </div>
-        </div>
+        <Popup text={textRef.current} />
       </div>
     </>
   )

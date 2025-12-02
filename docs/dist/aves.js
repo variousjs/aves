@@ -2,77 +2,6 @@ define(["react","@floating-ui/react-dom"], function(__WEBPACK_EXTERNAL_MODULE_re
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/components/aves/middleware.ts":
-/*!*******************************************!*\
-  !*** ./src/components/aves/middleware.ts ***!
-  \*******************************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   anchorCssProperties: function() { return /* binding */ anchorCssProperties; },
-/* harmony export */   transformOrigin: function() { return /* binding */ transformOrigin; }
-/* harmony export */ });
-const anchorCssProperties = () => ({
-  name: 'anchorCssProperties',
-
-  async fn(data) {
-    const {
-      rects,
-      elements,
-      platform
-    } = data;
-    const {
-      width,
-      height
-    } = rects.reference;
-    const {
-      width: popoverWidth,
-      height: popoverHeight
-    } = rects.floating;
-    elements.floating.style.setProperty('--selection-popover-select-width', `${width}px`);
-    elements.floating.style.setProperty('--selection-popover-select-height', `${height}px`);
-    const newDimensions = await platform.getDimensions(elements.floating);
-
-    if (popoverWidth !== newDimensions.width || popoverHeight !== newDimensions.height) {
-      return {
-        reset: {
-          rects: true
-        }
-      };
-    }
-
-    return {};
-  }
-
-});
-const transformOrigin = options => ({
-  name: 'transformOrigin',
-
-  fn(data) {
-    const {
-      rects,
-      middlewareData
-    } = data;
-    const isArrowHidden = middlewareData.arrow?.centerOffset !== 0;
-    const arrowWidth = isArrowHidden ? 0 : options.arrowWidth;
-    const arrowHeight = isArrowHidden ? 0 : options.arrowHeight;
-    const noArrowAlign = '50%';
-    const arrowXCenter = (middlewareData.arrow?.x ?? 0) + arrowWidth / 2;
-    const x = isArrowHidden ? noArrowAlign : `${arrowXCenter}px`;
-    const y = `${rects.floating.height + arrowHeight}px`;
-    return {
-      data: {
-        x,
-        y
-      }
-    };
-  }
-
-});
-
-/***/ }),
-
 /***/ "@floating-ui/react-dom":
 /*!*****************************************!*\
   !*** external "@floating-ui/react-dom" ***!
@@ -172,18 +101,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _floating_ui_react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @floating-ui/react-dom */ "@floating-ui/react-dom");
 /* harmony import */ var _floating_ui_react_dom__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_floating_ui_react_dom__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _middleware__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./middleware */ "./src/components/aves/middleware.ts");
-
 
 
 
 const Aves = props => {
+  const Popup = props.popup;
   const [selectionText, setSelectionText] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)();
   const textWrapperRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(null);
   const bodyUserSelect = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(document.body.style.userSelect);
-  const detectOverflowOptions = {
-    padding: 10
-  };
+  const textRef = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(undefined);
   const {
     x,
     y,
@@ -194,22 +120,18 @@ const Aves = props => {
     strategy: 'fixed',
     placement: 'top',
     whileElementsMounted: _floating_ui_react_dom__WEBPACK_IMPORTED_MODULE_1__.autoUpdate,
-    middleware: [(0,_floating_ui_react_dom__WEBPACK_IMPORTED_MODULE_1__.inline)(), (0,_middleware__WEBPACK_IMPORTED_MODULE_2__.anchorCssProperties)(), (0,_floating_ui_react_dom__WEBPACK_IMPORTED_MODULE_1__.offset)({
+    middleware: [(0,_floating_ui_react_dom__WEBPACK_IMPORTED_MODULE_1__.inline)(), (0,_floating_ui_react_dom__WEBPACK_IMPORTED_MODULE_1__.offset)({
       mainAxis: 10,
       alignmentAxis: 0
-    }), (0,_floating_ui_react_dom__WEBPACK_IMPORTED_MODULE_1__.flip)(detectOverflowOptions), (0,_floating_ui_react_dom__WEBPACK_IMPORTED_MODULE_1__.shift)({
+    }), (0,_floating_ui_react_dom__WEBPACK_IMPORTED_MODULE_1__.flip)(), (0,_floating_ui_react_dom__WEBPACK_IMPORTED_MODULE_1__.shift)({
       mainAxis: true,
       crossAxis: false,
-      limiter: (0,_floating_ui_react_dom__WEBPACK_IMPORTED_MODULE_1__.limitShift)(),
-      ...detectOverflowOptions
-    }), (0,_middleware__WEBPACK_IMPORTED_MODULE_2__.transformOrigin)({
-      arrowWidth: 10,
-      arrowHeight: 5
+      limiter: (0,_floating_ui_react_dom__WEBPACK_IMPORTED_MODULE_1__.limitShift)()
     }), (0,_floating_ui_react_dom__WEBPACK_IMPORTED_MODULE_1__.hide)({
       strategy: 'referenceHidden'
     })]
   });
-  const onCheckSelection = (0,react__WEBPACK_IMPORTED_MODULE_0__.useCallback)(async () => {
+  const onSelection = (0,react__WEBPACK_IMPORTED_MODULE_0__.useCallback)(async () => {
     setSelectionText(undefined);
     await new Promise(r => setTimeout(r));
     const selection = document.getSelection();
@@ -223,15 +145,16 @@ const Aves = props => {
     }
 
     const range = selection.getRangeAt(0);
+    textRef.current = range.toString();
     setSelectionText(range.toString());
     refs.setReference(range);
   }, [refs]);
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
-    document.addEventListener('pointerup', onCheckSelection);
+    document.addEventListener('pointerup', onSelection);
     return () => {
-      document.removeEventListener('pointerup', onCheckSelection);
+      document.removeEventListener('pointerup', onSelection);
     };
-  }, [onCheckSelection]);
+  }, [onSelection]);
   return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement((react__WEBPACK_IMPORTED_MODULE_0___default().Fragment), null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
     style: {
       userSelect: 'text',
@@ -252,21 +175,16 @@ const Aves = props => {
       top: 0,
       left: 0,
       transform: isPositioned ? `translate3d(${Math.round(x ?? 0)}px, ${Math.round(y ?? 0)}px, 0)` : 'translate3d(0, -200%, 0)',
+      userSelect: 'none',
       minWidth: 'max-content',
-      zIndex: 999,
+      zIndex: 9999,
       transition: 'opacity 0.3s ease-in-out',
       opacity: selectionText === undefined ? 0 : 1,
       visibility: selectionText === undefined ? 'hidden' : 'visible'
     }
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-    style: {
-      userSelect: 'none'
-    }
-  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement("div", {
-    style: {
-      background: 'gray'
-    }
-  }, selectionText))));
+  }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default().createElement(Popup, {
+    text: textRef.current
+  })));
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (Aves);
