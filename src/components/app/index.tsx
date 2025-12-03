@@ -29,7 +29,7 @@ const T = () => {
         <h3>中间件</h3>
         <div className="text" style={{ height: 1000 }}>
           空格 &nbsp; &nbsp; 情况
-          Floating UI 还提供了中间件的概念，就是在调用 computePosition 之后，then 之前运行的一段代码，可以改变浮动元素的定位和行为。
+          <span>Floating UI 还提供了中间件的<b>概念</b>，就是在调用 computePosition 之后，then 之前运行的<em>一段代码</em>，可以改变浮动元素的定位和行为。</span><b></b>B
     中间件是实现除了基本定位功能之外的其他功能统一的方式。
     Floating UI 提供了下面几个中间件
           <p>另外一段文字情况</p>
