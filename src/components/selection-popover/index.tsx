@@ -1,8 +1,5 @@
 import React, {
-  ComponentType,
-  CSSProperties,
   forwardRef,
-  ReactNode,
   useCallback,
   useEffect,
   useImperativeHandle,
@@ -19,20 +16,7 @@ import {
   hide,
   inline,
 } from '@floating-ui/react-dom'
-
-export interface Props {
-  children: ReactNode,
-  className?: string,
-  style?: CSSProperties,
-  popupClassName?: string,
-  popupStyle?: CSSProperties,
-  popup: ComponentType<{ text?: string }>,
-  disabled?: boolean,
-}
-
-export interface Ref {
-  hidePopup: () => void,
-}
+import { Props, Ref } from '@variousjs/aves/selection-popover'
 
 const Aves = forwardRef<Ref, Props>((props, ref) => {
   const Popup = props.popup

@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES2016",
+    "target": "ESNext",
     "moduleResolution": "node",
     "jsx": "react",
     "strict": true,
@@ -16,9 +16,7 @@
     "removeComments": true,
     "stripInternal": true,
     "resolveJsonModule": true,
-    "strictPropertyInitialization": false,
-    "paths": {
-    }
+    "strictPropertyInitialization": false
   },
   "exclude": ["dist", "docs"]
 }

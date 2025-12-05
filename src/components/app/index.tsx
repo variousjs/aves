@@ -4,9 +4,9 @@ import actions from './actions'
 import store from './store'
 import Loader from './loader'
 import Error from './error'
-import { Props as AvesProps, Ref as AvesRef } from '../aves'
+import { Props as AvesProps, Ref as AvesRef } from '@variousjs/aves/selection-popover'
 
-const Aves = createComponent<{}, AvesProps>({ name: 'aves' })
+const SelectionPopover = createComponent<{}, AvesProps>({ name: 'selection-popover' })
 
 const T = () => {
   const avesRef = useRef<AvesRef>(null)
@@ -14,8 +14,8 @@ const T = () => {
   return (
     <>
       <div style={{ marginBottom: 20 }}>这段文本选中时候不应该弹出浮窗</div>
-      <Aves
-        className="aves"
+      <SelectionPopover
+        className="selection-popover"
         $ref={avesRef}
         popup={({ text }) => {
             return <div style={{ background: '#fff', padding: '3px 8px', fontSize: 14, border: '1px solid #e5e5e5', boxShadow: '0px 4px 8px 0px rgba(31, 35, 41, 0.1)', borderRadius: 4 }}>
@@ -34,7 +34,7 @@ const T = () => {
     Floating UI 提供了下面几个中间件
           <p>另外一段文字情况</p>
         </div>
-      </Aves>
+      </SelectionPopover>
     </>
   )
 }

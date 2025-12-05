@@ -1,9 +1,21 @@
 {
-  "name": "variousjs",
+  "name": "@variousjs/aves",
   "version": "0.1.0",
   "description": "VariousJS boilerplate",
   "engines": {
     "node": ">=18"
+  },
+  "exports": {
+    "./selection-popover": {
+      "import": {
+        "types": "./selection-popover.d.ts",
+        "default": "./dist/selection-popover.js"
+      },
+      "require": {
+        "types": "./selection-popover.d.ts",
+        "default": "./dist/selection-popover.js"
+      }
+    }
   },
   "scripts": {
     "lint": "tsc --skipLibCheck --noemit && eslint . --ext .ts,.tsx,.js",
